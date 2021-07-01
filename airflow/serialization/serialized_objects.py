@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Unio
 import cattr
 import pendulum
 from dateutil import relativedelta
+from importlib import import_module
 
 try:
     from functools import cache
@@ -246,11 +247,25 @@ class BaseSerialization:
             return cls._encode([cls._serialize(v) for v in var], type_=DAT.TUPLE)
         elif isinstance(var, TaskGroup):
             return SerializedTaskGroup.serialize_task_group(var)
+        elif hasattr(var, '__serialize__'):
+            return {
+                '__var': var.__serialize__(), 
+                '__type': 'custom',
+                '__class': f'{var.__class__.__module__}.{var.__class__.__qualname__}'
+            }
         else:
             log.debug('Cast type %s to str in serialization.', type(var))
             return str(var)
 
     # pylint: enable=too-many-return-statements
+    
+    @classmethod
+    def _deserialize_dynamic(cls, var, type_):
+        m, c = type_.rsplit('.', 1)
+        module = import_module(m)
+        clazz = getattr(module, c)
+        return clazz.__deserialize__(var)
+            
 
     @classmethod
     def _deserialize(cls, encoded_var: Any) -> Any:  # pylint: disable=too-many-return-statements
@@ -291,6 +306,8 @@ class BaseSerialization:
             return {cls._deserialize(v) for v in var}
         elif type_ == DAT.TUPLE:
             return tuple([cls._deserialize(v) for v in var])
+        elif type_ == DAT.CUSTOM:
+            return cls._deserialize_dynamic(var, encoded_var['__class'])
         else:
             raise TypeError(f'Invalid type {type_!s} in deserialization.')
 

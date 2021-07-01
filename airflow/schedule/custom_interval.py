@@ -12,3 +12,6 @@ class CustomInterval():
         if not isinstance(other, datetime):
             raise NotImplemented
         return self.prev(other)
+    
+    def __abs__(self):
+        return self

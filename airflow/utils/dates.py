@@ -96,7 +96,7 @@ def date_range(
     elif isinstance(delta, CustomInterval):
         abs_delta = abs(delta)
     else:
-        raise Exception("Wait. delta must be either datetime.timedelta or cron expression as str")
+        raise Exception("Wait. delta must be either datetime.timedelta, dateutil.relativedelta, CustomInterval or cron expression as str")
 
     dates = []
     if end_date:

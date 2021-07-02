@@ -25,6 +25,27 @@
       ],
       "additionalProperties": false
     },
+    "typed_custom": {
+      "type": "object",
+      "properties": {
+        "__type": {
+          "type": "string",
+          "const": "custom"
+        },
+        "__var": {
+          "type": "string"
+        },
+        "__class": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "__type",
+        "__var",
+        "__class"
+      ],
+      "additionalProperties": false
+    },
     "typed_relativedelta": {
       "type": "object",
       "description": "A dateutil.relativedelta.relativedelta object",
@@ -84,7 +105,8 @@
             { "type": "null" },
             { "type": "string" },
             { "$ref": "#/definitions/typed_timedelta" },
-            { "$ref": "#/definitions/typed_relativedelta" }
+            { "$ref": "#/definitions/typed_relativedelta" },
+            { "$ref": "#/definitions/typed_custom" }
           ]
         },
         "catchup": { "type": "boolean" },

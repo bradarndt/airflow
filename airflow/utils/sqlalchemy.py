@@ -137,8 +137,8 @@ class Interval(TypeDecorator):
             return value
         data = json.loads(value)
         if isinstance(data, dict):
-            if data['type'] in self.attr_keys:
-                type_map = {key.__name__: key for key in self.attr_keys}
+            type_map = {key.__name__: key for key in self.attr_keys}
+            if data['type'] in type_map:
                 return type_map[data['type']](**data['attrs'])
             else:
                 clz = Interval.load_class(data.pop('type'))

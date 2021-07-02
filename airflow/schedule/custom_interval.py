@@ -18,7 +18,7 @@ class CustomInterval(abc.ABC):
         return self
     
     def __str__(self):
-        return self.__name__
+        return self.__class__.__name__
     
     @abc.abstractmethod
     def next(self, dttm):

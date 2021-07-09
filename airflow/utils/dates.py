@@ -40,7 +40,7 @@ def date_range(
     start_date: datetime,
     end_date: Optional[datetime] = None,
     num: Optional[int] = None,
-    delta: Optional[Union[str, timedelta, relativedelta]] = None,
+    delta: Optional[Union[str, timedelta, relativedelta, ScheduleInterval]] = None,
 ) -> List[datetime]:
     """
     Get a set of dates as a list based on a start, end and delta, delta
@@ -68,7 +68,7 @@ def date_range(
         output will always be sorted regardless
     :type num: int
     :param delta: step length. It can be datetime.timedelta or cron expression as string
-    :type delta: datetime.timedelta or str or dateutil.relativedelta
+    :type delta: datetime.timedelta or str or dateutil.relativedelta or ScheduleInterval
     """
     if not delta:
         return []

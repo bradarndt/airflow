@@ -255,7 +255,7 @@ class BaseSerialization:
         elif hasattr(var, '__serialize__'):
             return {
                 '__var': var.__serialize__(), 
-                '__type': 'custom',
+                '__type': 'scheduleinterval',
                 '__class': f'{var.__class__.__module__}.{var.__class__.__qualname__}'
             }
         else:
@@ -311,7 +311,7 @@ class BaseSerialization:
             return {cls._deserialize(v) for v in var}
         elif type_ == DAT.TUPLE:
             return tuple(cls._deserialize(v) for v in var)
-        elif type_ == DAT.CUSTOM:
+        elif type_ == DAT.SCHEDULE_INTERVAL:
             return cls._deserialize_dynamic(var, encoded_var['__class'])
         else:
             raise TypeError(f'Invalid type {type_!s} in deserialization.')

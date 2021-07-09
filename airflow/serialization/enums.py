@@ -47,4 +47,4 @@ class DagAttributeTypes(str, Enum):
     POD = 'k8s.V1Pod'
     TASK_GROUP = 'taskgroup'
     EDGE_INFO = 'edgeinfo'
-    CUSTOM = 'custom'
+    SCHEDULE_INTERVAL = 'scheduleinterval'

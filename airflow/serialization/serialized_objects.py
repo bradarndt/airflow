@@ -42,6 +42,7 @@ from airflow.models.baseoperator import BaseOperator, BaseOperatorLink
 from airflow.models.connection import Connection
 from airflow.models.dag import DAG
 from airflow.providers_manager import ProvidersManager
+from airflow.schedule.schedule_interval import ScheduleInterval
 from airflow.serialization.enums import DagAttributeTypes as DAT, Encoding
 from airflow.serialization.helpers import serialize_template_field
 from airflow.serialization.json_schema import Validator, load_dag_schema
@@ -252,12 +253,10 @@ class BaseSerialization:
             return cls._encode([cls._serialize(v) for v in var], type_=DAT.TUPLE)
         elif isinstance(var, TaskGroup):
             return SerializedTaskGroup.serialize_task_group(var)
-        elif hasattr(var, '__serialize__'):
-            return {
-                '__var': var.__serialize__(), 
-                '__type': 'scheduleinterval',
-                '__class': f'{var.__class__.__module__}.{var.__class__.__qualname__}'
-            }
+        elif isinstance(var, ScheduleInterval):
+            serialized = cls._encode(var.__serialize(), type_=DAT.SCHEDULE_INTERVAL)
+            serialized['__class'] = f'{var.__class__.__module__}.{var.__class__.__qualname__}'
+            return serialized
         else:
             log.debug('Cast type %s to str in serialization.', type(var))
             return str(var)

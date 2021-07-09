@@ -30,7 +30,7 @@ from sqlalchemy.orm.session import Session
 from sqlalchemy.types import DateTime, Text, TypeDecorator
 
 from airflow.configuration import conf
-from airflow.schedule.custom_interval import CustomInterval
+from airflow.schedule.schedule_interval import ScheduleInterval
 
 log = logging.getLogger(__name__)
 
@@ -120,7 +120,7 @@ class Interval(TypeDecorator):
     }
 
     def process_bind_param(self, value, dialect):
-        if isinstance(value, CustomInterval):
+        if isinstance(value, ScheduleInterval):
             return json.dumps(
                 {
                     'type': f'{value.__class__.__module__}.{value.__class__.__qualname__}',

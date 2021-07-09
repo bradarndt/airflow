@@ -1,7 +1,7 @@
 import abc
 from datetime import datetime
 
-class CustomInterval(abc.ABC):
+class ScheduleInterval(abc.ABC):
     def __radd__(self, other):
         if not isinstance(other, datetime):
             raise NotImplemented

@@ -23,7 +23,7 @@ from croniter import croniter
 from dateutil.relativedelta import relativedelta  # noqa: F401 for doctest
 
 from airflow.utils import timezone
-from airflow.schedule.custom_interval import CustomInterval
+from airflow.schedule.schedule_interval import ScheduleInterval
 
 cron_presets: Dict[str, str] = {
     '@hourly': '0 * * * *',
@@ -93,10 +93,10 @@ def date_range(
         abs_delta = abs(delta)
     elif isinstance(delta, relativedelta):
         abs_delta = abs(delta)
-    elif isinstance(delta, CustomInterval):
+    elif isinstance(delta, ScheduleInterval):
         abs_delta = abs(delta)
     else:
-        raise Exception("Wait. delta must be either datetime.timedelta, dateutil.relativedelta, CustomInterval or cron expression as str")
+        raise Exception("Wait. delta must be either datetime.timedelta, dateutil.relativedelta, ScheduleInterval or cron expression as str")
 
     dates = []
     if end_date:

@@ -254,7 +254,7 @@ class BaseSerialization:
         elif isinstance(var, TaskGroup):
             return SerializedTaskGroup.serialize_task_group(var)
         elif isinstance(var, ScheduleInterval):
-            serialized = cls._encode(var.__serialize(), type_=DAT.SCHEDULE_INTERVAL)
+            serialized = cls._encode(var.__serialize__(), type_=DAT.SCHEDULE_INTERVAL)
             serialized['__class'] = f'{var.__class__.__module__}.{var.__class__.__qualname__}'
             return serialized
         else:

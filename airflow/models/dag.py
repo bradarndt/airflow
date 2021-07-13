@@ -65,7 +65,7 @@ from airflow.models.dagparam import DagParam
 from airflow.models.dagpickle import DagPickle
 from airflow.models.dagrun import DagRun
 from airflow.models.taskinstance import Context, TaskInstance, clear_task_instances
-from airflow.models.schedule.schedule_interval import ScheduleInterval as SchedInterval
+from airflow.schedule.schedule_interval import ScheduleInterval as SchedInterval
 from airflow.security import permissions
 from airflow.stats import Stats
 from airflow.typing_compat import RePatternType

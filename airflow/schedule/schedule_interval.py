@@ -49,6 +49,7 @@ class ScheduleInterval():
     def __serialize__(self):
         return json.dumps(self.__dict__)
      
+    @classmethod
     def __deserialize__(cls, s):
         d = json.loads(s)
         return cls(**d)

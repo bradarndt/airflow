@@ -24,6 +24,7 @@ from croniter import croniter
 from dateutil.relativedelta import relativedelta  # for doctest
 
 from airflow.utils import timezone
+from airflow.schedule.schedule_interval import ScheduleInterval
 
 cron_presets: Dict[str, str] = {
     '@hourly': '0 * * * *',
@@ -39,7 +40,7 @@ def date_range(
     start_date: datetime,
     end_date: Optional[datetime] = None,
     num: Optional[int] = None,
-    delta: Optional[Union[str, timedelta, relativedelta]] = None,
+    delta: Optional[Union[str, timedelta, relativedelta, ScheduleInterval]] = None,
 ) -> List[datetime]:
     """
     Get a set of dates as a list based on a start, end and delta, delta
@@ -71,7 +72,7 @@ def date_range(
         output will always be sorted regardless
     :type num: int
     :param delta: step length. It can be datetime.timedelta or cron expression as string
-    :type delta: datetime.timedelta or str or dateutil.relativedelta
+    :type delta: datetime.timedelta or str or dateutil.relativedelta or ScheduleInterval
     """
     warnings.warn(
         "`airflow.utils.dates.date_range()` is deprecated. Please use `airflow.timetables`.",
@@ -102,8 +103,10 @@ def date_range(
         abs_delta = abs(delta)
     elif isinstance(delta, relativedelta):
         abs_delta = abs(delta)
+    elif isinstance(delta, ScheduleInterval):
+        abs_delta = abs(delta)
     else:
-        raise Exception("Wait. delta must be either datetime.timedelta or cron expression as str")
+        raise Exception("Wait. delta must be either datetime.timedelta, dateutil.relativedelta, ScheduleInterval or cron expression as str")
 
     dates = []
     if end_date:

@@ -20,6 +20,7 @@ import datetime
 import json
 import logging
 from typing import Any, Dict
+from importlib import import_module
 
 import pendulum
 from dateutil import relativedelta
@@ -29,6 +30,7 @@ from sqlalchemy.orm.session import Session
 from sqlalchemy.types import JSON, DateTime, Text, TypeDecorator, TypeEngine, UnicodeText
 
 from airflow.configuration import conf
+from airflow.schedule.schedule_interval import ScheduleInterval
 
 log = logging.getLogger(__name__)
 
@@ -162,7 +164,14 @@ class Interval(TypeDecorator):
     }
 
     def process_bind_param(self, value, dialect):
-        if isinstance(value, tuple(self.attr_keys)):
+        if isinstance(value, ScheduleInterval):
+            return json.dumps(
+                {
+                    'type': f'{value.__class__.__module__}.{value.__class__.__qualname__}',
+                    **json.loads(value.__serialize__())
+                }
+            )
+        elif isinstance(value, tuple(self.attr_keys)):
             attrs = {key: getattr(value, key) for key in self.attr_keys[type(value)]}
             return json.dumps({'type': type(value).__name__, 'attrs': attrs})
         return json.dumps(value)
@@ -173,8 +182,19 @@ class Interval(TypeDecorator):
         data = json.loads(value)
         if isinstance(data, dict):
             type_map = {key.__name__: key for key in self.attr_keys}
-            return type_map[data['type']](**data['attrs'])
+            if data['type'] in type_map:
+                return type_map[data['type']](**data['attrs'])
+            else:
+                clz = Interval.load_class(data.pop('type'))
+                return clz.__deserialize__(json.dumps(data))
+    
         return data
+    
+    @staticmethod
+    def load_class(name):
+        mdl, clazz = name.rsplit('.', 1)
+        module = import_module(mdl)
+        return getattr(module, clazz)
 
 
 def skip_locked(session: Session) -> Dict[str, Any]:

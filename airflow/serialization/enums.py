@@ -48,3 +48,4 @@ class DagAttributeTypes(str, Enum):
     TASK_GROUP = 'taskgroup'
     EDGE_INFO = 'edgeinfo'
     PARAM = 'param'
+    SCHEDULE_INTERVAL = 'scheduleinterval'

@@ -27,7 +27,7 @@ import cattr
 import pendulum
 from dateutil import relativedelta
 from pendulum.tz.timezone import FixedTimezone, Timezone
-
+from importlib import import_module
 from airflow.compat.functools import cache
 from airflow.configuration import conf
 from airflow.exceptions import AirflowException, SerializationError
@@ -36,6 +36,7 @@ from airflow.models.connection import Connection
 from airflow.models.dag import DAG, create_timetable
 from airflow.models.param import Param, ParamsDict
 from airflow.providers_manager import ProvidersManager
+from airflow.schedule.schedule_interval import ScheduleInterval
 from airflow.serialization.enums import DagAttributeTypes as DAT, Encoding
 from airflow.serialization.helpers import serialize_template_field
 from airflow.serialization.json_schema import Validator, load_dag_schema
@@ -326,9 +327,22 @@ class BaseSerialization:
             return SerializedTaskGroup.serialize_task_group(var)
         elif isinstance(var, Param):
             return cls._encode(var.dump(), type_=DAT.PARAM)
+        elif isinstance(var, ScheduleInterval):
+            serialized = cls._encode(var.__serialize__(), type_=DAT.SCHEDULE_INTERVAL)
+            serialized['__class'] = f'{var.__class__.__module__}.{var.__class__.__qualname__}'
+            return serialized
         else:
             log.debug('Cast type %s to str in serialization.', type(var))
             return str(var)
+
+  
+    @classmethod
+    def _deserialize_dynamic(cls, var, type_):
+        m, c = type_.rsplit('.', 1)
+        module = import_module(m)
+        clazz = getattr(module, c)
+        return clazz.__deserialize__(var)
+            
 
     @classmethod
     def _deserialize(cls, encoded_var: Any) -> Any:
@@ -371,6 +385,8 @@ class BaseSerialization:
             param_class = import_string(var['_type'])
             del var['_type']
             return param_class(**var)
+        elif type_ == DAT.SCHEDULE_INTERVAL:
+            return cls._deserialize_dynamic(var, encoded_var['__class'])
         else:
             raise TypeError(f'Invalid type {type_!s} in deserialization.')
 

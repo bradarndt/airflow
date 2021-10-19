@@ -1,8 +1,9 @@
-import abc
 import json
 from datetime import datetime
+from typing import Optional
+from pendulum import DateTime
 
-class ScheduleInterval(abc.ABC):
+class ScheduleInterval():
     def __radd__(self, other):
         if not isinstance(other, datetime):
             raise NotImplemented
@@ -21,13 +22,29 @@ class ScheduleInterval(abc.ABC):
     def __str__(self):
         return self.__class__.__name__
     
-    @abc.abstractmethod
-    def next(self, dttm):
-        pass
-    
-    @abc.abstractmethod
-    def prev(self, dttm):
-        pass
+    def skip_to_latest(self, earliest: Optional[DateTime]) -> DateTime:
+        """Bound the earliest time a run can be scheduled.
+
+        This is called when ``catchup=False``. 
+        """
+        raise NotImplementedError()
+
+    def align(self, current: DateTime) -> DateTime:
+        """Align given time to the scheduled.
+
+        For fixed schedules (e.g. every midnight); this finds the next time that
+        aligns to the declared time, if the given time does not align. If the
+        schedule is not fixed (e.g. every hour), the given time is returned.
+        """
+        raise NotImplementedError()
+
+    def next(self, current: DateTime) -> DateTime:
+        """Get the first schedule after the current time."""
+        raise NotImplementedError()
+
+    def prev(self, current: DateTime) -> DateTime:
+        """Get the last schedule before the current time."""
+        raise NotImplementedError()
     
     def __serialize__(self):
         return json.dumps(self.__dict__)

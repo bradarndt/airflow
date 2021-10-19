@@ -292,3 +292,19 @@ class DeltaDataIntervalTimetable(_DataIntervalTimetable):
 
     def infer_manual_data_interval(self, run_after: DateTime) -> DataInterval:
         return DataInterval(start=self._get_prev(run_after), end=run_after)
+    
+class ScheduleIntervalTimetable(_DataIntervalTimetable):
+    def __init__(self, schedule_interval):
+        self.schedule_interval = schedule_interval
+    
+    def _skip_to_latest(self, earliest: Optional[DateTime]) -> DateTime:
+        return self.schedule_interval.skip_to_latest(earliest)
+
+    def _align(self, current: DateTime) -> DateTime:
+        return self.schedule_interval.align(current)
+
+    def _get_next(self, current: DateTime) -> DateTime:
+        return self.schedule_interval.next(current)
+
+    def _get_prev(self, current: DateTime) -> DateTime:
+        return self.schedule_interval.prev(current)\

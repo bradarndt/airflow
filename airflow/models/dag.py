@@ -73,7 +73,8 @@ from airflow.schedule.schedule_interval import ScheduleInterval as SchedInterval
 from airflow.security import permissions
 from airflow.stats import Stats
 from airflow.timetables.base import DagRunInfo, DataInterval, TimeRestriction, Timetable
-from airflow.timetables.interval import CronDataIntervalTimetable, DeltaDataIntervalTimetable
+from airflow.timetables.interval import CronDataIntervalTimetable, DeltaDataIntervalTimetable,\
+    ScheduleIntervalTimetable
 from airflow.timetables.simple import NullTimetable, OnceTimetable
 from airflow.typing_compat import Literal, RePatternType
 from airflow.utils import timezone
@@ -158,6 +159,8 @@ def create_timetable(interval: ScheduleIntervalArg, timezone: tzinfo) -> Timetab
         return DeltaDataIntervalTimetable(interval)
     if isinstance(interval, str):
         return CronDataIntervalTimetable(interval, timezone)
+    if isinstance(interval, SchedInterval):
+        return ScheduleIntervalTimetable(interval)
     raise ValueError(f"{interval!r} is not a valid schedule_interval.")
 
 

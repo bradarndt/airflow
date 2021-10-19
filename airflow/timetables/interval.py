@@ -22,6 +22,7 @@ from croniter import CroniterBadCronError, CroniterBadDateError, croniter
 from dateutil.relativedelta import relativedelta
 from pendulum import DateTime
 from pendulum.tz.timezone import Timezone
+from airflow.schedule.schedule_interval import ScheduleInterval
 
 from airflow.compat.functools import cached_property
 from airflow.exceptions import AirflowTimetableInvalid
@@ -294,7 +295,7 @@ class DeltaDataIntervalTimetable(_DataIntervalTimetable):
         return DataInterval(start=self._get_prev(run_after), end=run_after)
     
 class ScheduleIntervalTimetable(_DataIntervalTimetable):
-    def __init__(self, schedule_interval):
+    def __init__(self, schedule_interval:ScheduleInterval) -> None:
         self.schedule_interval = schedule_interval
     
     def _skip_to_latest(self, earliest: Optional[DateTime]) -> DateTime:
@@ -307,4 +308,4 @@ class ScheduleIntervalTimetable(_DataIntervalTimetable):
         return self.schedule_interval.next(current)
 
     def _get_prev(self, current: DateTime) -> DateTime:
-        return self.schedule_interval.prev(current)\
+        return self.schedule_interval.prev(current)

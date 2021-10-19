@@ -69,6 +69,7 @@ from airflow.models.dagpickle import DagPickle
 from airflow.models.dagrun import DagRun
 from airflow.models.param import DagParam, ParamsDict
 from airflow.models.taskinstance import Context, TaskInstance, TaskInstanceKey, clear_task_instances
+from airflow.schedule.schedule_interval import ScheduleInterval as SchedInterval
 from airflow.security import permissions
 from airflow.stats import Stats
 from airflow.timetables.base import DagRunInfo, DataInterval, TimeRestriction, Timetable
@@ -98,7 +99,7 @@ ORIENTATION_PRESETS = ['LR', 'TB', 'RL', 'BT']
 ScheduleIntervalArgNotSet = type("ScheduleIntervalArgNotSet", (), {})
 
 DagStateChangeCallback = Callable[[Context], None]
-ScheduleInterval = Union[str, timedelta, relativedelta]
+ScheduleInterval = Union[str, timedelta, relativedelta, SchedInterval]
 ScheduleIntervalArg = Union[ScheduleInterval, None, Type[ScheduleIntervalArgNotSet]]
 
 
@@ -196,8 +197,8 @@ class DAG(LoggingMixin):
         timedelta object gets added to your latest task instance's
         execution_date to figure out the next schedule
     :type schedule_interval: datetime.timedelta or
-        dateutil.relativedelta.relativedelta or str that acts as a cron
-        expression
+        dateutil.relativedelta.relativedelta or ScheduleInterval or str that acts 
+        as a cron expression
     :param start_date: The timestamp from which the scheduler will
         attempt to backfill
     :type start_date: datetime.datetime

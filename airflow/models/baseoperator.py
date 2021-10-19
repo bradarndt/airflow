@@ -61,6 +61,7 @@ from airflow.models.pool import Pool
 from airflow.models.taskinstance import Context, TaskInstance, clear_task_instances
 from airflow.models.taskmixin import TaskMixin
 from airflow.models.xcom import XCOM_RETURN_KEY
+from airflow.schedule.schedule_interval import ScheduleInterval as SchedInterval
 from airflow.ti_deps.deps.base_ti_dep import BaseTIDep
 from airflow.ti_deps.deps.not_in_retry_period_dep import NotInRetryPeriodDep
 from airflow.ti_deps.deps.not_previously_skipped_dep import NotPreviouslySkippedDep
@@ -80,7 +81,7 @@ if TYPE_CHECKING:
     from airflow.models.xcom_arg import XComArg
     from airflow.utils.task_group import TaskGroup
 
-ScheduleInterval = Union[str, timedelta, relativedelta]
+ScheduleInterval = Union[str, timedelta, relativedelta, SchedInterval]
 
 TaskStateChangeCallback = Callable[[Context], None]
 TaskPreExecuteHook = Callable[[Context], None]

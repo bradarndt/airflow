@@ -1,4 +1,5 @@
 import abc
+import json
 from datetime import datetime
 
 class ScheduleInterval(abc.ABC):
@@ -30,8 +31,9 @@ class ScheduleInterval(abc.ABC):
     
     @abc.abstractmethod
     def __serialize__(self):
-        pass
+        return json.dumps(self.__dict__)
     
     @abc.abstractclassmethod    
     def __deserialize__(cls, s):
-        pass
+        d = json.loads(s)
+        return cls(**d)

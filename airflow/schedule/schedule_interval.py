@@ -29,11 +29,9 @@ class ScheduleInterval(abc.ABC):
     def prev(self, dttm):
         pass
     
-    @abc.abstractmethod
     def __serialize__(self):
         return json.dumps(self.__dict__)
-    
-    @abc.abstractclassmethod    
+     
     def __deserialize__(cls, s):
         d = json.loads(s)
         return cls(**d)
